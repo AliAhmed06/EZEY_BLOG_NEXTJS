@@ -1,174 +1,174 @@
-"use client";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { AiOutlineFileImage } from "react-icons/ai";
-import { toast } from "react-toastify";
+// "use client";
+// import { useSession } from "next-auth/react";
+// import { useRouter } from "next/navigation";
+// import React, { useState } from "react";
+// import { AiOutlineFileImage } from "react-icons/ai";
+// import { toast } from "react-toastify";
 
-const CreateBlogPage = () => {
+// const CreateBlogPage = () => {
 
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [category, setCategory] = useState("Nature");
-  const [photo, setPhoto] = useState("");
-  const [loading, setLoading] = useState(false);
+//   const [title, setTitle] = useState("");
+//   const [desc, setDesc] = useState("");
+//   const [category, setCategory] = useState("Nature");
+//   const [photo, setPhoto] = useState("");
+//   const [loading, setLoading] = useState(false);
 
-  const { data, status } = useSession();
-  const router = useRouter();
+//   const { data, status } = useSession();
+//   const router = useRouter();
 
   
-  if (status === "loading") {
-    return (
-      <div className="h-[400px] flex items-center justify-center">
-        <img src="/images/loading.gif" alt="" className="h-[70px]" />
-      </div>
-    );
-  }
+//   if (status === "loading") {
+//     return (
+//       <div className="h-[400px] flex items-center justify-center">
+//         <img src="/images/loading.gif" alt="" className="h-[70px]" />
+//       </div>
+//     );
+//   }
 
-  if (status === "unauthenticated") {
-    return (
-      <div className="h-[400px] flex items-center justify-center">
-        <p className="font-bold text-2xl">Access Denied</p>
-      </div>
-    );
-  }
+//   if (status === "unauthenticated") {
+//     return (
+//       <div className="h-[400px] flex items-center justify-center">
+//         <p className="font-bold text-2xl">Access Denied</p>
+//       </div>
+//     );
+//   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
 
-    if (!photo || !title || !category || !desc) {
-      toast.error("All fields are required");
-      return;
-    }
+//     if (!photo || !title || !category || !desc) {
+//       toast.error("All fields are required");
+//       return;
+//     }
 
-    try {
-      setLoading(true);
-      const imageUrl = await uploadImage();
+//     try {
+//       setLoading(true);
+//       const imageUrl = await uploadImage();
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN_NAME}/api/blog`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${data?.user?.accessToken}`,
-        },
-        method: "POST",
-        body: JSON.stringify({
-          title,
-          desc,
-          category,
-          imageUrl,
-          authorId: data?.user?._id,
-        }),
-      });
+//       const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN_NAME}/api/blog`, {
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `Bearer ${data?.user?.accessToken}`,
+//         },
+//         method: "POST",
+//         body: JSON.stringify({
+//           title,
+//           desc,
+//           category,
+//           imageUrl,
+//           authorId: data?.user?._id,
+//         }),
+//       });
 
-      if (res.ok) {
-        const blog = await res.json();
-        toast.success("Post created Successfully");
-        setTimeout(() => {
-          router.push(`/blog/${blog?._id}`);
-        }, 1500);
-        return;
-      } else {
-        toast.error("Error occured while creating post ");
-        console.log("error", res);
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+//       if (res.ok) {
+//         const blog = await res.json();
+//         toast.success("Post created Successfully");
+//         setTimeout(() => {
+//           router.push(`/blog/${blog?._id}`);
+//         }, 1500);
+//         return;
+//       } else {
+//         toast.error("Error occured while creating post ");
+//         console.log("error", res);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  const uploadImage = async () => {
-    if (!photo) return;
+//   const uploadImage = async () => {
+//     if (!photo) return;
 
-    const formData = new FormData();
+//     const formData = new FormData();
 
-    formData.append("file", photo);
-    formData.append("upload_preset", process.env.NEXT_PUBLIC_UPLOAD_PRESET);
+//     formData.append("file", photo);
+//     formData.append("upload_preset", process.env.NEXT_PUBLIC_UPLOAD_PRESET);
 
-    try {
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
+//     try {
+//       const res = await fetch(
+//         `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/image/upload`,
+//         {
+//           method: "POST",
+//           body: formData,
+//         }
+//       );
 
-      const data = await res.json();
+//       const data = await res.json();
 
-      const imageUrl = data["secure_url"];
+//       const imageUrl = data["secure_url"];
 
-      return imageUrl;
-    } catch (error) {
-      console.log(error);
-    }
-  };
+//       return imageUrl;
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
 
-  // toast.error("All fields are required");
+//   // toast.error("All fields are required");
 
-  return (
-    <div className=" h-[500px] flex items-center justify-center my-10">
-      <div className="w-full lg:w-[450px] border border-yellow-500 p-10">
-        <h2 className="font-bold text-xl text-yellow-500">Create New Blog</h2>
-        <form
-          onSubmit={handleSubmit}
-          className="w-full flex flex-col gap-3 mt-5"
-        >
-          <input
-            type="text"
-            placeholder="Enter Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="outline-none border border-gray-300 py-2 px-5 rounded-md focus:border-yellow-500"
-          />
+//   return (
+//     <div className=" h-[500px] flex items-center justify-center my-10">
+//       <div className="w-full lg:w-[450px] border border-yellow-500 p-10">
+//         <h2 className="font-bold text-xl text-yellow-500">Create New Blog</h2>
+//         <form
+//           onSubmit={handleSubmit}
+//           className="w-full flex flex-col gap-3 mt-5"
+//         >
+//           <input
+//             type="text"
+//             placeholder="Enter Title"
+//             value={title}
+//             onChange={(e) => setTitle(e.target.value)}
+//             className="outline-none border border-gray-300 py-2 px-5 rounded-md focus:border-yellow-500"
+//           />
 
-          <textarea
-            placeholder="Enter Description"
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-            className="outline-none border border-gray-300 py-2 px-5 rounded-md focus:border-yellow-500 h-[150px]"
-          ></textarea>
+//           <textarea
+//             placeholder="Enter Description"
+//             value={desc}
+//             onChange={(e) => setDesc(e.target.value)}
+//             className="outline-none border border-gray-300 py-2 px-5 rounded-md focus:border-yellow-500 h-[150px]"
+//           ></textarea>
 
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="text-gray-500 outline-none border border-gray-300 py-2 px-5 rounded-md focus:border-yellow-500"
-          >
-            <option value="Nature">Nature</option>
-            <option value="Mountain">Mountain</option>
-            <option value="Ocean">Ocean</option>
-            <option value="Wildlife">Wildlife</option>
-            <option value="Forest">Forest</option>
-          </select>
+//           <select
+//             value={category}
+//             onChange={(e) => setCategory(e.target.value)}
+//             className="text-gray-500 outline-none border border-gray-300 py-2 px-5 rounded-md focus:border-yellow-500"
+//           >
+//             <option value="Nature">Nature</option>
+//             <option value="Mountain">Mountain</option>
+//             <option value="Ocean">Ocean</option>
+//             <option value="Wildlife">Wildlife</option>
+//             <option value="Forest">Forest</option>
+//           </select>
 
-          <label
-            htmlFor="image"
-            className="flex items-center gap-3 text-gray-500 cursor-pointer"
-          >
-            <span>Upload Image</span> <AiOutlineFileImage />
-          </label>
-          <input
-            type="file"
-            id="image"
-            onChange={(e) => setPhoto(e.target.files[0])}
-            className="hidden"
-          />
+//           <label
+//             htmlFor="image"
+//             className="flex items-center gap-3 text-gray-500 cursor-pointer"
+//           >
+//             <span>Upload Image</span> <AiOutlineFileImage />
+//           </label>
+//           <input
+//             type="file"
+//             id="image"
+//             onChange={(e) => setPhoto(e.target.files[0])}
+//             className="hidden"
+//           />
 
-          <button
-            type="submit"
-            className="bg-yellow-500 text-white py-2 rounded-md hover:bg-opacity-70"
-          >
-            {loading ? (
-              <img src="/images/loading.gif" alt="" className="h-[25px]" />
-            ) : (
-              "Create"
-            )}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
+//           <button
+//             type="submit"
+//             className="bg-yellow-500 text-white py-2 rounded-md hover:bg-opacity-70"
+//           >
+//             {loading ? (
+//               <img src="/images/loading.gif" alt="" className="h-[25px]" />
+//             ) : (
+//               "Create"
+//             )}
+//           </button>
+//         </form>
+//       </div>
+//     </div>
+//   );
+// };
 
-export default CreateBlogPage;
+// export default CreateBlogPage;
