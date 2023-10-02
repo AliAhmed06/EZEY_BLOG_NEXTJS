@@ -1,4 +1,10 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = nextConfig
+module.exports = {
+    async rewrites() {
+        return [
+          {
+            source: '/api/:path*',
+            destination: 'ezey-blog-nextjs.vercel.app/:path*',
+          },
+        ]
+    },
+};
